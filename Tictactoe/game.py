@@ -24,9 +24,9 @@ class Game:
 
         :return board: A list of lists.
         """
-        self.board = [[' ', ' ', ' '],
-                      [' ', ' ', ' '],
-                      [' ', ' ', ' ']]
+        self.board = [[' ', 'X', 'O'],
+                      [' ', 'O', 'X'],
+                      ['X', 'O', 'X']]
         return self.board
 
     def start_game(self):
@@ -69,10 +69,12 @@ class Game:
         j = random.randrange(3)
         return i, j
 
-    def is_full(self) -> bool:
-        if ' ' not in self.board:
-            return True
+    def is_draw(self) -> bool:
+        if any(' ' in sublist for sublist in self.board):
+            return False
         else:
+            print('DRAW')
+            self.retry()
             return False
 
     def available(self, i, j) -> bool:
@@ -82,6 +84,7 @@ class Game:
             return False
 
     def pc_move(self):
+        self.is_draw()
         print('PC move')
         i, j = self.random_generator()
         if self.available(i, j):
@@ -92,6 +95,21 @@ class Game:
         else:
             print("That space isn't open")
             self.pc_move()
+
+    def user_move(self):
+        self.is_draw()
+        print('Where do you want to play row #, column #')
+        temp = input().split()
+        i, j = int(temp[0]), int(temp[1])
+        if self.available(i, j):
+            self.board[i][j] = self.user_suite
+            print('User move')
+            self.print_board()
+            if self.check_for_winner() is False:
+                self.pc_move()
+        else:
+            print("That space isn't open")
+            self.user_move()
 
     def combinations(self):
         for i in range(3):
@@ -108,20 +126,6 @@ class Game:
             elif self.board[0][2] == self.board[1][1] and self.board[1][1] == self.board[2][0]:
                 return [self.board[0][2], self.board[1][1], self.board[2][0]]
         return '0'
-
-    def user_move(self):
-        print('Where do you want to play row #, column #')
-        temp = input().split()
-        i, j = int(temp[0]), int(temp[1])
-        if self.available(i, j):
-            self.board[i][j] = self.user_suite
-            print('User move')
-            self.print_board()
-            if self.check_for_winner() is False:
-                self.pc_move()
-        else:
-            print("That space isn't open")
-            self.user_move()
 
     def check_for_winner(self) -> bool:
         temp = self.combinations()
